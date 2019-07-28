@@ -2,6 +2,8 @@ version: '3.3'
 services:
   lists_orch:
     image: lists_orch
+    depends_on:
+     - redis
     networks:
      - lists_network
 
