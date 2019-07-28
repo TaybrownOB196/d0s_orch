@@ -3,6 +3,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Lists.Processor.Caching;
+using Lists.Processor.Options;
 
 namespace Lists.Processor
 {
@@ -22,6 +24,9 @@ namespace Lists.Processor
                 })
                 .ConfigureServices((hostContext, services) => {
                     services.AddHostedService<HostService>();
+                    services.AddSingleton(typeof(IService), typeof(PingService));
+                    services.AddSingleton(typeof(ICachingClient), typeof(CachingClient));
+                    services.Configure<RedisOptions>(hostContext.Configuration.GetSection("Redis"));
                 })
                 .Build();
 
