@@ -1,0 +1,17 @@
+version: '3.3'
+services:
+  lists_orch:
+    image: lists_orch
+    networks:
+     - lists_network
+
+  redis:
+    image: redis:latest
+    networks:
+     - lists_network
+    ports:
+     - "6379:6379"    
+
+networks:
+  lists_network:
+    driver: bridge
