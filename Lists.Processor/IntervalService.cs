@@ -4,21 +4,20 @@ using System;
 
 namespace Lists.Processor
 {
-    public abstract class IntervalService<TTrigger> : IService
+    public abstract class IntervalService<TServiceInfo> : IService where TServiceInfo : new ()
     {
         private Timer _timer;
         private readonly int _timeout;
         private readonly int _interval;
-        private readonly TTrigger _trigger;
         protected readonly ILogger _logger;
         protected readonly string _name;
+        protected TServiceInfo _trigger;
 
-        protected IntervalService(string name, int timeout, int interval, TTrigger trigger, ILogger logger) 
+        protected IntervalService(string name, int timeout, int interval, ILogger logger) 
         {
             _name = name;
             _timeout = timeout;
             _interval = interval;
-            _trigger = trigger;
             _logger = logger;
         }
 
@@ -27,13 +26,14 @@ namespace Lists.Processor
         public void Start() 
         {
             _logger.LogDebug($"init {_name} timer");
+            _trigger = new TServiceInfo(); 
             _timer = new Timer(
                 ExecuteAsync, 
                 _trigger, 
                 _timeout, 
                 _interval);
         } 
-        public void Stop()
+        public virtual void Stop()
         { 
             _logger.LogDebug($"disposing {_name} timer");
             _timer.Dispose();
@@ -41,8 +41,8 @@ namespace Lists.Processor
 
         private void ExecuteAsync(Object obj) 
         {
-            ExecuteAsync((TTrigger)obj);
+            ExecuteAsync((TServiceInfo)obj);
         }
-        protected abstract void ExecuteAsync(TTrigger trigger);
+        protected abstract void ExecuteAsync(TServiceInfo trigger);
     }
 }
