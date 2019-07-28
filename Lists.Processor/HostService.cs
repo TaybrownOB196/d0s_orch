@@ -8,18 +8,21 @@ namespace Lists.Processor
     public class HostService : BackgroundService
     {
         private readonly ILogger _logger;
-        public HostService(ILogger<HostService> logger) {
+        private readonly IService _service;
+        public HostService(ILogger<HostService> logger, IService service) {
             _logger = logger;
+            _service = service;
         }
         protected override Task ExecuteAsync(CancellationToken token)
         {
             _logger.LogInformation("running host");
-            Task.Delay(1000);
+            _service.Start();
             return Task.CompletedTask;
         }
 
         public override Task StopAsync(CancellationToken token)
         {
+            _service.Stop();
             return Task.CompletedTask;
         }
 }
