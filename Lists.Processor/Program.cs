@@ -15,7 +15,8 @@ namespace Lists.Processor
             var host = new HostBuilder()
                 .ConfigureAppConfiguration((hostContext, configBuilder) => {
                     configBuilder.AddJsonFile("appsettings.json");
-                    configBuilder.AddJsonFile($"appsettings.{hostContext.HostingEnvironment}.json", optional: true);
+                    configBuilder.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true);
+                    configBuilder.AddEnvironmentVariables();
                     configBuilder.AddCommandLine(args);
                 })
                 .ConfigureLogging((hostContext, logging) => {
