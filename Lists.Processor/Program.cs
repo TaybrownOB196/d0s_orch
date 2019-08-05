@@ -27,8 +27,10 @@ namespace Lists.Processor
                     logging.AddConsole();
                 })
                 .ConfigureServices((hostContext, services) => {
+                    services.AddLogging();
                     services.AddHostedService<HostService>();
                     services.AddSingleton(typeof(IService), typeof(PingService));
+                    services.AddSingleton(typeof(IService), typeof(ReferenceDataService));
                     services.AddSingleton(typeof(ICachingClient), typeof(CachingClient));
                     services.AddTransient(typeof(IDatabase), typeof(Database));
                     services.Configure<RedisOptions>(hostContext.Configuration.GetSection("Redis"));
