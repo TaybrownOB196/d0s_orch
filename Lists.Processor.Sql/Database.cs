@@ -5,7 +5,10 @@ using Microsoft.Extensions.Options;
 using MySql.Data.MySqlClient;
 using Lists.Processor.Sql.Models;
 using Lists.Processor.Sql.Operations;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Lists.Processor.Sql.Tests")]
 namespace Lists.Processor.Sql
 {
     public class Database : IDatabase 
@@ -13,13 +16,21 @@ namespace Lists.Processor.Sql
         private readonly string _connString;
         private readonly ILogger _logger;
 
-        public Database(IOptionsMonitor<SqlOptions> sqlOption, ILogger logger)
+        public Database(IOptionsMonitor<SqlOptions> sqlOption, ILogger<Database> logger)
         {
             _connString = sqlOption.CurrentValue.ConnectionString;
             _logger = logger;
         }
 
-        public T ExecuteQuery<T>(IDatabaseRetrievalOperation<T> operation) where T : DbModel
+        internal void connect()
+        {
+            using (MySqlConnection connection = new MySqlConnection(_connString))
+            {
+                connection.Open();
+            }
+        }
+
+        public T ExecuteQuery<T>(IDatabaseRetrievalOperation<T> operation) where T : IEnumerable<DbModel>
         {
             var cmd = new MySqlCommand(operation.QueryString());
             try 
@@ -30,10 +41,7 @@ namespace Lists.Processor.Sql
                     cmd.Connection = connection;
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
-                        while(reader.Read())
-                        {
-                            return operation.ResultOrDefault(reader);
-                        }
+                        return operation.ResultOrDefault(reader);
                     }
                 }
             }

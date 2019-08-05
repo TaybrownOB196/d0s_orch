@@ -8,7 +8,6 @@ namespace Lists.Processor.Sql.Models
         protected DbModel(DbDataReader reader) 
         {
             isActive = Convert.ToBoolean(reader["isActive"]);
-            createDate = Convert.ToDateTime(reader["createDate"]);
             lastUpdateDate = Convert.ToDateTime(reader["lastUpdateDate"]);
         }
 
