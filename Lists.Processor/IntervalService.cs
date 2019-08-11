@@ -9,20 +9,17 @@ namespace Lists.Processor
         private Timer _timer;
         private readonly int _timeout;
         private readonly int _interval;
-        protected readonly ILogger _logger;
         protected TServiceInfo _trigger;
 
         protected IntervalService(string name, int timeout, int interval, ILogger logger)
-            : base(name)
+            : base(name, logger)
         {
             _timeout = timeout;
             _interval = interval;
-            _logger = logger;
         }
 
-        public override void Start() 
+        protected override void StartService() 
         {
-            _logger.LogDebug($"init {_name} timer");
             _trigger = new TServiceInfo(); 
             _timer = new Timer(
                 ExecuteAsync, 
@@ -30,9 +27,8 @@ namespace Lists.Processor
                 _timeout, 
                 _interval);
         } 
-        public override void Stop()
+        protected override void StopService()
         { 
-            _logger.LogDebug($"disposing {_name} timer");
             _timer.Change(0,0);
             _timer.Dispose();
         }

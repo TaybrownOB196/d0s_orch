@@ -19,11 +19,6 @@ namespace Lists.Processor
             _logger.LogInformation("ping");
             _cacheClient.Ping();
         }
-
-        public override void Stop() 
-        {
-            base.Stop();
-        }
     }
 
 }

@@ -10,23 +10,20 @@ namespace Lists.Processor
     public class ReferenceDataService : BaseService, IReferenceDataProvider
     {
         private readonly IDatabase _db;
-        private readonly ILogger _logger;
         private Dictionary<string, string> _data;
         public ReferenceDataService(IDatabase database, ILogger<ReferenceDataService> logger)
-            : base(nameof(ReferenceDataService))
+            : base(nameof(ReferenceDataService), logger)
         {
             _db = database;
-            _logger = logger;
             _data = new Dictionary<string, string>();
         }
-        public override void Start() 
+        protected override void StartService() 
         {
-            _logger.LogDebug($"starting {_name}");
             Reload();
         }
-        public override void Stop() 
+        protected override void StopService() 
         {
-            _logger.LogDebug($"stopping {_name}");
+            _data = new Dictionary<string, string>();
         }
 
         public void Reload()
