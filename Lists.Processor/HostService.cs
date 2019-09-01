@@ -23,7 +23,7 @@ namespace Lists.Processor
         {
             _logger.LogInformation("running host");
             Parallel.ForEach(_services, async (service) => {
-                await service.PrestartAsync().ConfigureAwait(false);
+                await service.PrestartAsync();
             });
             Parallel.ForEach(_services, async (service) => {
                 await service.StartAsync().ConfigureAwait(false);
