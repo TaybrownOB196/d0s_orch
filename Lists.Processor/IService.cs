@@ -1,10 +1,12 @@
+using System.Threading.Tasks;
+
 namespace Lists.Processor
 {
     public interface IService 
     {
-        void Prestart();
-        void Prestop();
-        void Start();
-        void Stop();
+        Task PrestartAsync();
+        Task PrestopAsync();
+        Task StartAsync();
+        Task StopAsync();
     }
 }
