@@ -16,25 +16,38 @@ namespace Lists.Processor
         public HostService(IServiceProvider serviceProvider, ILogger<HostService> logger) {
             _logger = logger;
             _serviceProvider = serviceProvider;
+            _services = _serviceProvider.GetServices<IService>();
         }
+
         protected override Task ExecuteAsync(CancellationToken token)
         {
             _logger.LogInformation("running host");
-            _services = _serviceProvider.GetServices<IService>();
-            foreach(var service in _services)
-            {
-                service.Start();
-            }
+            Parallel.ForEach(_services, async (service) => {
+                await service.PrestartAsync().ConfigureAwait(false);
+            });
+            Parallel.ForEach(_services, async (service) => {
+                await service.StartAsync().ConfigureAwait(false);
+            });
+
             return Task.CompletedTask;
         }
 
-        public override Task StopAsync(CancellationToken token)
+        public async override Task StopAsync(CancellationToken token)
         {
-            foreach(var service in _services)
+            List<Task> preStopTasks = new List<Task>();
+            List<Task> stopTasks = new List<Task>();
+
+            foreach(var service in _services) 
             {
-                service.Stop();
+                preStopTasks.Add(service.StopAsync());
             }
-            return Task.CompletedTask;
+            await Task.WhenAll(preStopTasks.ToArray());
+
+            foreach(var service in _services) 
+            {
+                stopTasks.Add(service.StopAsync());
+            }
+            await Task.WhenAll(stopTasks.ToArray());
         }
-}
+    }
 }
