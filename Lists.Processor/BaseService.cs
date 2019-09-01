@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Lists.Processor
@@ -12,23 +13,19 @@ namespace Lists.Processor
             _logger = logger;
         }
 
-        //Not used
-        public void Prestart() { }
-        //Not used
-        public void Prestop() { }
-
-        public void Start()
+        public virtual Task PrestartAsync()
         {
             _logger.LogDebug($"starting {_name}");
-            StartService();
+            return Task.CompletedTask;
         }
 
-        public void Stop()
+        public virtual Task PrestopAsync()
         {
             _logger.LogDebug($"stopping {_name}");
+            return Task.CompletedTask;
         }
-        
-        protected abstract void StartService();
-        protected abstract void StopService();
+
+        public abstract Task StartAsync();
+        public abstract Task StopAsync();
     }
 }
