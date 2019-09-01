@@ -24,7 +24,7 @@ namespace Tests
         public void Should_Connect()
         {
             var sqlOptions = new SqlOptions();
-            sqlOptions.ConnectionString = "server=192.168.99.100;database=temp;port=9999;user=dosorchuser;password=password;";
+            sqlOptions.ConnectionString = "server=192.168.99.100;database=temp;port=3306;user=dosorchuser;password=__password__srvc;";
             _optionsMock.Setup(x => x.CurrentValue).Returns(sqlOptions);
             var db = new Database(_optionsMock.Object, _loggerMock.Object);
             db.connect();
