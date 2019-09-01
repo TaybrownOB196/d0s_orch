@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Lists.Processor.Sql;
 using Lists.Processor.Caching;
 using Lists.Processor.Options;
+using Lists.Processor.Services;
 
 namespace Lists.Processor
 {
@@ -14,9 +15,6 @@ namespace Lists.Processor
         private static async Task Main(string[] args)
         {
             var host = new HostBuilder()
-                .ConfigureHostConfiguration((configBuilder) => {
-                    configBuilder.AddEnvironmentVariables(prefix: "LIST_ORCH_");
-                })
                 .ConfigureAppConfiguration((hostContext, configBuilder) => {
                     configBuilder.AddJsonFile("appsettings.json");
                     configBuilder.AddJsonFile($"appsettings.{hostContext.HostingEnvironment.EnvironmentName}.json", optional: true);
@@ -29,12 +27,18 @@ namespace Lists.Processor
                 .ConfigureServices((hostContext, services) => {
                     services.AddLogging();
                     services.AddHostedService<HostService>();
-                    services.AddSingleton(typeof(IService), typeof(PingService));
-                    services.AddSingleton(typeof(IService), typeof(ReferenceDataService));
-                    services.AddSingleton(typeof(ICachingClient), typeof(CachingClient));
+
+                    services.AddScoped(typeof(IIOService), typeof(HttpListenerService));
+
                     services.AddTransient(typeof(IDatabase), typeof(Database));
+                    services.AddTransient(typeof(ICachingClient), typeof(CachingClient));
+
+                    services.AddSingleton(typeof(IUtilityService), typeof(PingService));
+                    services.AddSingleton(typeof(IUtilityService), typeof(ReferenceDataService));
+
                     services.Configure<RedisOptions>(hostContext.Configuration.GetSection("Redis"));
                     services.Configure<SqlOptions>(hostContext.Configuration.GetSection("MySql"));
+                    services.Configure<HttpListenerOptions>(hostContext.Configuration.GetSection("Http"));
                 })
                 .Build();
 
