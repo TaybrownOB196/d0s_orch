@@ -1,42 +1,40 @@
 using Microsoft.Extensions.Logging;
-using System.Threading;
+using System.Timers;
 using System;
+using System.Threading.Tasks;
 
 namespace Lists.Processor
 {
-    public abstract class IntervalService<TServiceInfo> : BaseService where TServiceInfo : new ()
+    public abstract class IntervalService : BaseService
     {
         private Timer _timer;
-        private readonly int _timeout;
         private readonly int _interval;
-        protected TServiceInfo _trigger;
 
-        protected IntervalService(string name, int timeout, int interval, ILogger logger)
+        protected IntervalService(string name, int interval, ILogger logger)
             : base(name, logger)
         {
-            _timeout = timeout;
             _interval = interval;
         }
 
-        protected override void StartService() 
+        public override Task StartAsync() 
         {
-            _trigger = new TServiceInfo(); 
-            _timer = new Timer(
-                ExecuteAsync, 
-                _trigger, 
-                _timeout, 
-                _interval);
-        } 
-        protected override void StopService()
-        { 
-            _timer.Change(0,0);
-            _timer.Dispose();
+            _timer = new Timer(_interval);
+            _timer.Elapsed += async (sender, e) => await ExecuteAsync(sender, e);
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+            return Task.CompletedTask;
         }
 
-        private void ExecuteAsync(Object obj) 
+        public override Task StopAsync()
         {
-            ExecuteAsync((TServiceInfo)obj);
+            _timer.Stop();
+            return Task.CompletedTask;
         }
-        protected abstract void ExecuteAsync(TServiceInfo trigger);
+
+        private async Task ExecuteAsync(Object source, ElapsedEventArgs e) 
+        {
+            await ExecuteAsync().ConfigureAwait(false);
+        }
+        protected abstract Task ExecuteAsync();
     }
 }
