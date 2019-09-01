@@ -6,9 +6,16 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 
-namespace Lists.Processor
+namespace Lists.Processor.Services
 {
-    public class ReferenceDataService : BaseService, IReferenceDataProvider
+    public interface IReferenceDataProvider
+    {
+        T ValueOrDefault<T>(string key, T defaultValue);
+
+        void Reload();
+    }
+
+    public class ReferenceDataService : BaseService, IUtilityService, IReferenceDataProvider
     {
         private readonly IDatabase _db;
         private ConcurrentDictionary<string, string> _data;
@@ -18,12 +25,12 @@ namespace Lists.Processor
             _db = database;
             _data = new ConcurrentDictionary<string, string>();
         }
-        public override Task StartAsync() 
+        protected override Task StartServiceAsync() 
         {
             Reload();
             return Task.CompletedTask;            
         }
-        public override Task StopAsync() 
+        protected override Task StopServiceAsync() 
         {
             return Task.CompletedTask;            
         }

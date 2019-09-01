@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
-namespace Lists.Processor
+namespace Lists.Processor.Services
 {
     public abstract class BaseService : IService
     {
@@ -13,19 +13,19 @@ namespace Lists.Processor
             _logger = logger;
         }
 
-        public virtual Task PrestartAsync()
+        public async Task StartAsync()
         {
             _logger.LogDebug($"starting {_name}");
-            return Task.CompletedTask;
+            await StartServiceAsync();
         }
-
-        public virtual Task PrestopAsync()
+        
+        public async Task StopAsync()
         {
             _logger.LogDebug($"stopping {_name}");
-            return Task.CompletedTask;
+            await StopServiceAsync();
         }
 
-        public abstract Task StartAsync();
-        public abstract Task StopAsync();
+        protected abstract Task StartServiceAsync();
+        protected abstract Task StopServiceAsync();
     }
 }

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Lists.Processor
+namespace Lists.Processor.Services
 {
-    public class HttpListenerService : BaseService
+    public class HttpListenerService : BaseService, IIOService
     {
         private readonly IEnumerable<string> _prefixes;
         private readonly HttpListener _listener;
@@ -25,7 +25,7 @@ namespace Lists.Processor
             }
         }
 
-        public async override Task StartAsync()
+        protected async override Task StartServiceAsync()
         {
             _listener.Start();
             await Task.Run(() => 
@@ -49,7 +49,7 @@ namespace Lists.Processor
             }
         }
 
-        public override Task StopAsync()
+        protected override Task StopServiceAsync()
         {
             _listener.Close();
             return Task.CompletedTask;

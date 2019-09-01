@@ -3,7 +3,7 @@ using System.Timers;
 using System;
 using System.Threading.Tasks;
 
-namespace Lists.Processor
+namespace Lists.Processor.Services
 {
     public abstract class IntervalService : BaseService
     {
@@ -16,7 +16,7 @@ namespace Lists.Processor
             _interval = interval;
         }
 
-        public override Task StartAsync() 
+        protected override Task StartServiceAsync() 
         {
             _timer = new Timer(_interval);
             _timer.Elapsed += async (sender, e) => await ExecuteAsync(sender, e);
@@ -25,7 +25,7 @@ namespace Lists.Processor
             return Task.CompletedTask;
         }
 
-        public override Task StopAsync()
+        protected override Task StopServiceAsync()
         {
             _timer.Stop();
             return Task.CompletedTask;

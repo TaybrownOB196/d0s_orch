@@ -2,9 +2,9 @@ using Microsoft.Extensions.Logging;
 using Lists.Processor.Caching;
 using System.Threading.Tasks;
 
-namespace Lists.Processor
+namespace Lists.Processor.Services
 {
-    public class PingService : IntervalService
+    public class PingService : IntervalService, IUtilityService
     {
         private readonly ICachingClient _cacheClient;
         public PingService(ILogger<PingService> logger, ICachingClient cacheClient) 

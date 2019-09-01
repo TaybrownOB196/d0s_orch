@@ -27,6 +27,7 @@
     <ProjectReference Include="..\Lists.Processor.Caching\Lists.Processor.Caching.csproj" />
     <ProjectReference Include="..\Lists.Processor.Options\Lists.Processor.Options.csproj" />
     <ProjectReference Include="..\Lists.Processor.Sql\Lists.Processor.Sql.csproj" />
+    <ProjectReference Include="..\Lists.Processor.Services\Lists.Processor.Services.csproj" />
   </ItemGroup>
 
 </Project>
