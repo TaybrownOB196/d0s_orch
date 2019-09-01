@@ -1,40 +1,44 @@
 using Lists.Processor.Sql;
 using Lists.Processor.Sql.Operations;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace Lists.Processor
 {
     public class ReferenceDataService : BaseService, IReferenceDataProvider
     {
         private readonly IDatabase _db;
-        private Dictionary<string, string> _data;
+        private ConcurrentDictionary<string, string> _data;
         public ReferenceDataService(IDatabase database, ILogger<ReferenceDataService> logger)
             : base(nameof(ReferenceDataService), logger)
         {
             _db = database;
-            _data = new Dictionary<string, string>();
+            _data = new ConcurrentDictionary<string, string>();
         }
-        protected override void StartService() 
+        public override Task StartAsync() 
         {
             Reload();
+            return Task.CompletedTask;            
         }
-        protected override void StopService() 
+        public override Task StopAsync() 
         {
-            _data = new Dictionary<string, string>();
+            return Task.CompletedTask;            
         }
 
         public void Reload()
         {
+            var reloadDict = new ConcurrentDictionary<string, string>();
             var operation = new GetReferenceDataOperation();
             var referenceData = _db.ExecuteQuery(operation);
             foreach(var refData in referenceData)
             {
                 _logger.LogInformation($"key: {refData.key}, value: {refData.value}");
-                _data.Add(refData.key, refData.value);
+                reloadDict.TryAdd(refData.key, refData.value);
             }
+            _data = reloadDict;
         }
 
         public T ValueOrDefault<T>(string key, T defaultValue)
