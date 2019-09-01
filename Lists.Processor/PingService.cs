@@ -1,23 +1,23 @@
-
 using Microsoft.Extensions.Logging;
 using Lists.Processor.Caching;
+using System.Threading.Tasks;
 
 namespace Lists.Processor
 {
-    public class ServiceInfo { }
-    public class PingService : IntervalService<ServiceInfo>
+    public class PingService : IntervalService
     {
         private readonly ICachingClient _cacheClient;
         public PingService(ILogger<PingService> logger, ICachingClient cacheClient) 
-            : base(nameof(PingService), 0, 1000, logger) 
+            : base(nameof(PingService), 1000, logger) 
             {
                 _cacheClient = cacheClient;
             }
 
-        protected override void ExecuteAsync(ServiceInfo trigger)
+        protected override Task ExecuteAsync()
         {
             _logger.LogInformation("ping");
             _cacheClient.Ping();
+            return Task.CompletedTask;
         }
     }
 
