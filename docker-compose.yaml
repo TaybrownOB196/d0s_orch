@@ -13,27 +13,16 @@ services:
     restart: always
     networks:
      - lists_network
-    ports:
-     - "6379:6379"
 
   mysql:
-    image: d0s_mysql:0.1
+    image: lists_mysql
     restart: always
     networks:
      - lists_network
-    ports:
-     - "9999:3306"
-    expose:
-     - "9999"
     environment:
      - MYSQL_ROOT_PASSWORD=password
      - MYSQL_DATABASE=temp
-    volumes:
-     - mysql_mysqldata:/var/lib/mysql
 
 networks:
   lists_network:
     driver: bridge
-
-volumes:
-    mysql_mysqldata:
