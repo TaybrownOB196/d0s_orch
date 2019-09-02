@@ -39,4 +39,4 @@ msbuild.wrn
 
 appsettings.*.json
 
-*.sql
+mysql/*.sql
