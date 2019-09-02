@@ -10,8 +10,9 @@ ENV PATH=/root/cli:$PATH
 RUN yum install git -y
 RUN git clone https://github.com/TaybrownOB196/d0s_orch.git
 
-RUN cd d0s_orch && \
-    dotnet build Lists.Processor
-WORKDIR /d0s_orch/
-ENTRYPOINT [ "dotnet", "run", "--project", "Lists.Processor" ]
+EXPOSE 9999
 
+WORKDIR /d0s_orch/
+RUN dotnet build Lists.Processor
+RUN chmod u+x wait-for-it.sh
+ENTRYPOINT [ "./wait-for-it.sh", "mysql:3306", "-t", "180000", "--", "dotnet", "run", "--project", "Lists.Processor" ]
